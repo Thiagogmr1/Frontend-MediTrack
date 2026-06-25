@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, Trash2, Clock, Pill, FileText, ChevronDown, ChevronUp } from "lucide-react"
+import { Plus, Trash2, Clock, Pill, FileText, ChevronDown, ChevronUp, Repeat } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -11,7 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner"
 import { useAuth } from "@/lib/auth-context"
 
-// Tipo simples de paciente (vem do GET /patients/doctor/:id)
 interface PatientSimple {
     id: number
     name: string
@@ -25,13 +24,15 @@ interface MedicationSchedule {
 }
 
 interface MedicationForm {
-    id: string // apenas para controle local
+    id: string
     name: string
     dosage: string
     indication: string
     notes: string
     start_date: string
     end_date: string
+    continuous_use: boolean
+    frequency: string
     schedules: MedicationSchedule[]
 }
 
@@ -50,6 +51,8 @@ function createEmptyMedication(): MedicationForm {
         notes: "",
         start_date: "",
         end_date: "",
+        continuous_use: false,
+        frequency: "",
         schedules: [{ scheduled_time: "" }],
     }
 }
@@ -67,7 +70,7 @@ export function DoctorNewPrescription({
     const [loading, setLoading] = useState(false)
 
     // ── Medicamento ──────────────────────────────────────────────
-    function updateMedication(id: string, field: keyof MedicationForm, value: string) {
+    function updateMedication(id: string, field: keyof MedicationForm, value: string | boolean) {
         setMedications((prev) =>
             prev.map((m) => (m.id === id ? { ...m, [field]: value } : m))
         )
@@ -138,11 +141,15 @@ export function DoctorNewPrescription({
         }
 
         for (const med of medications) {
-            if (!med.name || !med.dosage || !med.start_date || !med.end_date) {
+            if (!med.name || !med.dosage || !med.start_date) {
                 toast.error(`Preencha todos os campos obrigatórios do medicamento "${med.name || "sem nome"}"`)
                 return
             }
-            if (med.end_date < med.start_date) {
+            if (!med.continuous_use && !med.end_date) {
+                toast.error(`Informe a data de fim de "${med.name}" ou marque uso contínuo`)
+                return
+            }
+            if (!med.continuous_use && med.end_date < med.start_date) {
                 toast.error(`A data de fim não pode ser anterior à de início em "${med.name}"`)
                 return
             }
@@ -160,7 +167,13 @@ export function DoctorNewPrescription({
                 doctor_id: user?.user_id,
                 patient_id: parseInt(patientId),
                 notes: prescriptionNotes || null,
-                medications: medications.map(({ id, ...med }) => med),
+                medications: medications.map(({ id, ...med }) => ({
+                    ...med,
+                    end_date: med.continuous_use ? null : med.end_date,
+                    indication: med.indication || null,
+                    notes: med.notes || null,
+                    frequency: med.frequency || null,
+                })),
             }
 
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/prescriptions/`, {
@@ -248,7 +261,6 @@ export function DoctorNewPrescription({
                     const isCollapsed = collapsedMeds.has(med.id)
                     return (
                         <Card key={med.id} className="border-border">
-                            {/* Cabeçalho do medicamento */}
                             <CardHeader className="pb-3">
                                 <div className="flex items-center justify-between">
                                     <CardTitle className="text-base flex items-center gap-2">
@@ -300,6 +312,24 @@ export function DoctorNewPrescription({
                                         </div>
                                     </div>
 
+                                    {/* Toggle uso contínuo */}
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => updateMedication(med.id, "continuous_use", !med.continuous_use)}
+                                            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${med.continuous_use
+                                                    ? "bg-primary/10 text-primary border-primary/30"
+                                                    : "bg-muted text-muted-foreground border-border hover:border-primary/30"
+                                                }`}
+                                        >
+                                            <Repeat className="w-3.5 h-3.5" />
+                                            Uso contínuo
+                                        </button>
+                                        {med.continuous_use && (
+                                            <span className="text-xs text-muted-foreground">Sem data de fim</span>
+                                        )}
+                                    </div>
+
                                     {/* Período */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
@@ -310,18 +340,20 @@ export function DoctorNewPrescription({
                                                 onChange={(e) => updateMedication(med.id, "start_date", e.target.value)}
                                             />
                                         </div>
-                                        <div className="space-y-2">
-                                            <Label>Data de fim <span className="text-destructive">*</span></Label>
-                                            <Input
-                                                type="date"
-                                                value={med.end_date}
-                                                min={med.start_date}
-                                                onChange={(e) => updateMedication(med.id, "end_date", e.target.value)}
-                                            />
-                                        </div>
+                                        {!med.continuous_use && (
+                                            <div className="space-y-2">
+                                                <Label>Data de fim <span className="text-destructive">*</span></Label>
+                                                <Input
+                                                    type="date"
+                                                    value={med.end_date}
+                                                    min={med.start_date}
+                                                    onChange={(e) => updateMedication(med.id, "end_date", e.target.value)}
+                                                />
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {/* Indicação + Observações */}
+                                    {/* Indicação + Frequência */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label>Indicação de uso</Label>
@@ -332,13 +364,23 @@ export function DoctorNewPrescription({
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>Observações</Label>
+                                            <Label>Frequência</Label>
                                             <Input
-                                                placeholder="Ex: Evitar com álcool"
-                                                value={med.notes}
-                                                onChange={(e) => updateMedication(med.id, "notes", e.target.value)}
+                                                placeholder="Ex: A cada 8 horas"
+                                                value={med.frequency}
+                                                onChange={(e) => updateMedication(med.id, "frequency", e.target.value)}
                                             />
                                         </div>
+                                    </div>
+
+                                    {/* Observações */}
+                                    <div className="space-y-2">
+                                        <Label>Observações</Label>
+                                        <Input
+                                            placeholder="Ex: Evitar com álcool"
+                                            value={med.notes}
+                                            onChange={(e) => updateMedication(med.id, "notes", e.target.value)}
+                                        />
                                     </div>
 
                                     {/* Horários */}
@@ -385,7 +427,6 @@ export function DoctorNewPrescription({
                     )
                 })}
 
-                {/* Botão adicionar medicamento */}
                 <Button
                     variant="outline"
                     className="w-full gap-2 border-dashed text-muted-foreground hover:text-foreground"
