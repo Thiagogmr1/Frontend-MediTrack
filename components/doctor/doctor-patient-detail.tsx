@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import {
   ArrowLeft, TrendingUp, Flame, AlertTriangle, Calendar, Plus, Phone,
   Clock, Trash2, Pill, ChevronDown, ChevronUp, FileText, Eye, Pencil,
-  PauseCircle, X, RotateCcw, Repeat
+  PauseCircle, X, RotateCcw, Repeat, PlayCircle
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -470,7 +470,7 @@ function PrescriptionList({
   const [loading, setLoading] = useState(true)
   const [viewTarget, setViewTarget] = useState<PrescriptionDetail | null>(null)
   const [editTarget, setEditTarget] = useState<PrescriptionDetail | null>(null)
-  const [confirmAction, setConfirmAction] = useState<{ type: "suspend" | "delete"; id: number } | null>(null)
+  const [confirmAction, setConfirmAction] = useState<{ type: "suspend" | "delete" | "reactivate"; id: number } | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
 
   async function fetchList() {
@@ -519,9 +519,12 @@ function PrescriptionList({
     setActionLoading(true)
     try {
       const method = confirmAction.type === "delete" ? "DELETE" : "PATCH"
-      const url = confirmAction.type === "suspend"
-        ? `${process.env.NEXT_PUBLIC_API_URL}/prescriptions/${confirmAction.id}/suspend`
-        : `${process.env.NEXT_PUBLIC_API_URL}/prescriptions/${confirmAction.id}`
+      const url =
+        confirmAction.type === "suspend"
+          ? `${process.env.NEXT_PUBLIC_API_URL}/prescriptions/${confirmAction.id}/suspend`
+          : confirmAction.type === "reactivate"
+            ? `${process.env.NEXT_PUBLIC_API_URL}/prescriptions/${confirmAction.id}/reactivate`
+            : `${process.env.NEXT_PUBLIC_API_URL}/prescriptions/${confirmAction.id}`
 
       const res = await fetch(url, {
         method,
@@ -534,7 +537,12 @@ function PrescriptionList({
         return
       }
 
-      toast.success(confirmAction.type === "suspend" ? "Prescrição suspensa" : "Prescrição encerrada")
+      const messages = {
+        suspend: "Prescrição suspensa",
+        reactivate: "Prescrição reativada",
+        delete: "Prescrição encerrada",
+      }
+      toast.success(messages[confirmAction.type])
       setConfirmAction(null)
       fetchList()
     } catch {
@@ -636,6 +644,38 @@ function PrescriptionList({
                       </Tooltip>
                     </>
                   )}
+
+                  {p.status === "suspended" && (
+                    <>
+                      {/* Reativar */}
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost" size="icon"
+                            className="h-8 w-8 text-emerald-600 hover:bg-emerald-500/10"
+                            onClick={() => setConfirmAction({ type: "reactivate", id: p.prescription_id })}
+                          >
+                            <PlayCircle className="w-4 h-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Reativar</TooltipContent>
+                      </Tooltip>
+
+                      {/* Encerrar */}
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost" size="icon"
+                            className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                            onClick={() => setConfirmAction({ type: "delete", id: p.prescription_id })}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Encerrar</TooltipContent>
+                      </Tooltip>
+                    </>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -684,12 +724,18 @@ function PrescriptionList({
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>
-              {confirmAction?.type === "suspend" ? "Suspender prescrição?" : "Encerrar prescrição?"}
+              {confirmAction?.type === "suspend"
+                ? "Suspender prescrição?"
+                : confirmAction?.type === "reactivate"
+                  ? "Reativar prescrição?"
+                  : "Encerrar prescrição?"}
             </DialogTitle>
             <DialogDescription>
               {confirmAction?.type === "suspend"
                 ? "Os alertas do paciente serão pausados. O histórico de doses é preservado."
-                : "A prescrição será encerrada. O histórico médico é preservado e não pode ser desfeito."}
+                : confirmAction?.type === "reactivate"
+                  ? "A prescrição voltará a ficar ativa. Novas doses serão geradas a partir de hoje, o período suspenso não será contabilizado."
+                  : "A prescrição será encerrada. O histórico médico é preservado e não pode ser desfeito."}
             </DialogDescription>
           </DialogHeader>
           <div className="flex gap-3 pt-2">
@@ -702,11 +748,22 @@ function PrescriptionList({
               Cancelar
             </Button>
             <Button
-              className={`flex-1 ${confirmAction?.type === "delete" ? "bg-destructive hover:bg-destructive/90" : "bg-yellow-500 hover:bg-yellow-600 text-white"}`}
+              className={`flex-1 ${confirmAction?.type === "delete"
+                  ? "bg-destructive hover:bg-destructive/90"
+                  : confirmAction?.type === "reactivate"
+                    ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                    : "bg-yellow-500 hover:bg-yellow-600 text-white"
+                }`}
               onClick={handleConfirmAction}
               disabled={actionLoading}
             >
-              {actionLoading ? "Aguarde..." : confirmAction?.type === "suspend" ? "Suspender" : "Encerrar"}
+              {actionLoading
+                ? "Aguarde..."
+                : confirmAction?.type === "suspend"
+                  ? "Suspender"
+                  : confirmAction?.type === "reactivate"
+                    ? "Reativar"
+                    : "Encerrar"}
             </Button>
           </div>
         </DialogContent>
