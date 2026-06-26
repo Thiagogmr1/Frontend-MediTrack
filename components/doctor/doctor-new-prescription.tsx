@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { MedicationAutocomplete } from "@/components/doctor/medication-autocomplete"
 import { toast } from "sonner"
 import { useAuth } from "@/lib/auth-context"
 
@@ -296,10 +297,9 @@ export function DoctorNewPrescription({
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label>Nome do medicamento <span className="text-destructive">*</span></Label>
-                                            <Input
-                                                placeholder="Ex: Metformina"
+                                            <MedicationAutocomplete
                                                 value={med.name}
-                                                onChange={(e) => updateMedication(med.id, "name", e.target.value)}
+                                                onChange={(value) => updateMedication(med.id, "name", value)}
                                             />
                                         </div>
                                         <div className="space-y-2">
