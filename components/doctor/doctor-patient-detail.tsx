@@ -19,6 +19,7 @@ import { useAuth } from "@/lib/auth-context"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import type { Patient } from "./doctor-dashboard"
+import { MedicationAutocomplete } from "@/components/doctor/medication-autocomplete"
 
 // ─────────────────────────────────────────────────────────────
 // TYPES
@@ -79,6 +80,10 @@ interface PrescriptionSummary {
   status: string
   created_at: string
   total_medications: number
+  has_continuous: boolean
+  latest_end_date: string | null
+  latest_scheduled_time: string | null
+  medication_names: string[]
 }
 
 interface PrescriptionDetail {
@@ -109,7 +114,22 @@ function createEmptyMedication(): MedicationForm {
   }
 }
 
-function statusBadge(status: string) {
+function isCompleted(p: Pick<PrescriptionSummary, "status" | "has_continuous" | "latest_end_date" | "latest_scheduled_time">): boolean {
+  if (p.status !== "active") return false
+  if (p.has_continuous) return false
+  if (!p.latest_end_date || !p.latest_scheduled_time) return false
+
+  const [year, month, day] = p.latest_end_date.split("-").map(Number)
+  const [hours, minutes] = p.latest_scheduled_time.split(":").map(Number)
+
+  const lastDose = new Date(year, month - 1, day, hours, minutes, 0)
+  return lastDose < new Date()
+}
+
+function statusBadge(status: string, p?: Pick<PrescriptionSummary, "status" | "has_continuous" | "latest_end_date" | "latest_scheduled_time">) {
+  if (p && isCompleted(p)) {
+    return <Badge className="bg-blue-500/15 text-blue-600 border-blue-500/30 hover:bg-blue-500/15">Concluída</Badge>
+  }
   switch (status) {
     case "active":
       return <Badge className="bg-emerald-500/15 text-emerald-600 border-emerald-500/30 hover:bg-emerald-500/15">Ativa</Badge>
@@ -123,7 +143,11 @@ function statusBadge(status: string) {
 }
 
 function formatDate(dateStr: string) {
-  return dateStr.split("-").reverse().join("/")
+  if (!dateStr) return "—"
+  // Se vier só a data (YYYY-MM-DD), adiciona horário para evitar interpretação UTC
+  const normalized = dateStr.length === 10 ? `${dateStr}T00:00:00` : dateStr
+  const date = new Date(normalized)
+  return date.toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })
 }
 
 const MONTHS_SHORT = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
@@ -574,38 +598,48 @@ function PrescriptionList({
     <>
       <div className="flex flex-col gap-3">
         {prescriptions.map((p) => (
-          <Card key={p.prescription_id} className="border-border">
+          <Card
+            key={p.prescription_id}
+            className="border-border cursor-pointer transition-all duration-200 hover:border-primary/40 hover:shadow-md hover:bg-muted/30"
+            onClick={() => handleView(p.prescription_id)}
+          >
             <CardContent className="pt-4 pb-4">
               <div className="flex items-start justify-between gap-4">
-                <div className="flex flex-col gap-1.5 min-w-0">
+
+                {/* Informações principais */}
+                <div className="flex flex-col gap-2 min-w-0">
+                  {/* Status + Data */}
                   <div className="flex items-center gap-2 flex-wrap">
-                    {statusBadge(p.status)}
+                    {statusBadge(p.status, p)}
                     <span className="text-xs text-muted-foreground">
-                      {formatDate(p.created_at.split("T")[0] || p.created_at.slice(0, 10))}
+                      Início: {formatDate(p.created_at)}
                     </span>
                   </div>
-                  <p className="text-sm text-foreground font-medium">
-                    {p.total_medications} {p.total_medications === 1 ? "medicamento" : "medicamentos"}
-                  </p>
-                  {p.notes && (
-                    <p className="text-xs text-muted-foreground truncate max-w-xs">{p.notes}</p>
-                  )}
+
+                  {/* Nomes dos medicamentos */}
+                  <div className="flex flex-wrap gap-1.5">
+                    {[...new Set(p.medication_names)].map((name, index) => (
+                      <span
+                        key={`${name}-${index}`}
+                        className="inline-flex items-center gap-1 text-xs bg-primary/8 text-primary px-2 py-0.5 rounded-full border border-primary/15"
+                      >
+                        <Pill className="w-3 h-3" />
+                        {name}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Total */}
+
                 </div>
 
-                <div className="flex items-center gap-1 shrink-0">
-                  {/* Visualizar */}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleView(p.prescription_id)}>
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Visualizar</TooltipContent>
-                  </Tooltip>
-
+                {/* Botões — stopPropagation para não abrir modal */}
+                <div
+                  className="flex items-center gap-1 shrink-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   {p.status === "active" && (
                     <>
-                      {/* Editar */}
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(p.prescription_id)}>
@@ -615,7 +649,6 @@ function PrescriptionList({
                         <TooltipContent>Editar</TooltipContent>
                       </Tooltip>
 
-                      {/* Suspender */}
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
@@ -629,7 +662,6 @@ function PrescriptionList({
                         <TooltipContent>Suspender</TooltipContent>
                       </Tooltip>
 
-                      {/* Encerrar */}
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
@@ -647,7 +679,6 @@ function PrescriptionList({
 
                   {p.status === "suspended" && (
                     <>
-                      {/* Reativar */}
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
@@ -661,7 +692,6 @@ function PrescriptionList({
                         <TooltipContent>Reativar</TooltipContent>
                       </Tooltip>
 
-                      {/* Encerrar */}
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
@@ -681,7 +711,7 @@ function PrescriptionList({
             </CardContent>
           </Card>
         ))}
-      </div>
+      </div>   
 
       {/* Modal: Visualizar */}
       <Dialog open={!!viewTarget} onOpenChange={(o) => !o && setViewTarget(null)}>
@@ -689,7 +719,7 @@ function PrescriptionList({
           <DialogHeader>
             <DialogTitle>Detalhes da Prescrição</DialogTitle>
             <DialogDescription>
-              Criada em {viewTarget && formatDate(viewTarget.created_at.slice(0, 10))}
+              Criada em {viewTarget && formatDate(viewTarget.created_at)}
               {" · "}
               {viewTarget && statusBadge(viewTarget.status)}
             </DialogDescription>
@@ -749,10 +779,10 @@ function PrescriptionList({
             </Button>
             <Button
               className={`flex-1 ${confirmAction?.type === "delete"
-                  ? "bg-destructive hover:bg-destructive/90"
-                  : confirmAction?.type === "reactivate"
-                    ? "bg-emerald-600 hover:bg-emerald-700 text-white"
-                    : "bg-yellow-500 hover:bg-yellow-600 text-white"
+                ? "bg-destructive hover:bg-destructive/90"
+                : confirmAction?.type === "reactivate"
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                  : "bg-yellow-500 hover:bg-yellow-600 text-white"
                 }`}
               onClick={handleConfirmAction}
               disabled={actionLoading}
@@ -1034,8 +1064,8 @@ function PrescriptionEditForm({
                       type="button"
                       onClick={() => updateMedication(med.id, "continuous_use", !med.continuous_use)}
                       className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${med.continuous_use
-                          ? "bg-primary/10 text-primary border-primary/30"
-                          : "bg-muted text-muted-foreground border-border hover:border-primary/30"
+                        ? "bg-primary/10 text-primary border-primary/30"
+                        : "bg-muted text-muted-foreground border-border hover:border-primary/30"
                         }`}
                     >
                       <Repeat className="w-3.5 h-3.5" />
@@ -1306,7 +1336,10 @@ function PrescriptionForm({
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
                       <Label className="text-xs">Nome <span className="text-destructive">*</span></Label>
-                      <Input placeholder="Ex: Metformina" value={med.name} onChange={(e) => updateMedication(med.id, "name", e.target.value)} />
+                      <MedicationAutocomplete
+                        value={med.name}
+                        onChange={(value) => updateMedication(med.id, "name", value)}
+                      />
                     </div>
                     <div className="space-y-1.5">
                       <Label className="text-xs">Dosagem <span className="text-destructive">*</span></Label>
@@ -1320,8 +1353,8 @@ function PrescriptionForm({
                       type="button"
                       onClick={() => updateMedication(med.id, "continuous_use", !med.continuous_use)}
                       className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${med.continuous_use
-                          ? "bg-primary/10 text-primary border-primary/30"
-                          : "bg-muted text-muted-foreground border-border hover:border-primary/30"
+                        ? "bg-primary/10 text-primary border-primary/30"
+                        : "bg-muted text-muted-foreground border-border hover:border-primary/30"
                         }`}
                     >
                       <Repeat className="w-3.5 h-3.5" />
