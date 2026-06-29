@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, Trash2, Clock, Pill, FileText, ChevronDown, ChevronUp, Repeat } from "lucide-react"
+import { Plus, Trash2, Clock, Pill, FileText, ChevronDown, ChevronUp, Repeat, CalendarDays } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -33,6 +33,7 @@ interface MedicationForm {
     start_date: string
     end_date: string
     continuous_use: boolean
+    weekly: boolean
     frequency: string
     schedules: MedicationSchedule[]
 }
@@ -53,6 +54,7 @@ function createEmptyMedication(): MedicationForm {
         start_date: "",
         end_date: "",
         continuous_use: false,
+        weekly: false,
         frequency: "",
         schedules: [{ scheduled_time: "" }],
     }
@@ -313,18 +315,31 @@ export function DoctorNewPrescription({
                                     </div>
 
                                     {/* Toggle uso contínuo */}
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-3 flex-wrap">
                                         <button
                                             type="button"
                                             onClick={() => updateMedication(med.id, "continuous_use", !med.continuous_use)}
                                             className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${med.continuous_use
-                                                    ? "bg-primary/10 text-primary border-primary/30"
-                                                    : "bg-muted text-muted-foreground border-border hover:border-primary/30"
+                                                ? "bg-primary/10 text-primary border-primary/30"
+                                                : "bg-muted text-muted-foreground border-border hover:border-primary/30"
                                                 }`}
                                         >
                                             <Repeat className="w-3.5 h-3.5" />
                                             Uso contínuo
                                         </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => updateMedication(med.id, "weekly", !med.weekly)}
+                                            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${med.weekly
+                                                ? "bg-primary/10 text-primary border-primary/30"
+                                                : "bg-muted text-muted-foreground border-border hover:border-primary/30"
+                                                }`}
+                                        >
+                                            <CalendarDays className="w-3.5 h-3.5" />
+                                            Semanal
+                                        </button>
+
                                         {med.continuous_use && (
                                             <span className="text-xs text-muted-foreground">Sem data de fim</span>
                                         )}

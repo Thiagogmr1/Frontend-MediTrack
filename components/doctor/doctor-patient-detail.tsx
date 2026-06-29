@@ -1,11 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import {
-  ArrowLeft, TrendingUp, Flame, AlertTriangle, Calendar, Plus, Phone,
-  Clock, Trash2, Pill, ChevronDown, ChevronUp, FileText, Eye, Pencil,
-  PauseCircle, X, RotateCcw, Repeat, PlayCircle
-} from "lucide-react"
+import { ArrowLeft, TrendingUp, Flame, AlertTriangle, Calendar, Plus, Phone, Clock, Trash2, Pill, 
+ChevronDown, ChevronUp, FileText, Eye, Pencil, PauseCircle, X, RotateCcw, Repeat, PlayCircle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -69,6 +66,7 @@ interface MedicationDetail {
   start_date: string
   end_date: string | null
   continuous_use: boolean
+  weekly: boolean
   frequency: string | null
   status: string
   schedules: string[]
@@ -603,11 +601,11 @@ function PrescriptionList({
             className="border-border cursor-pointer transition-all duration-200 hover:border-primary/40 hover:shadow-md hover:bg-muted/30"
             onClick={() => handleView(p.prescription_id)}
           >
-            <CardContent className="pt-4 pb-4">
+            <CardContent className="pt-2 pb-2">
               <div className="flex items-start justify-between gap-4">
 
                 {/* Informações principais */}
-                <div className="flex flex-col gap-2 min-w-0">
+                <div className="flex flex-col gap-4 min-w-0">
                   {/* Status + Data */}
                   <div className="flex items-center gap-2 flex-wrap">
                     {statusBadge(p.status, p)}
@@ -901,6 +899,7 @@ function PrescriptionEditForm({
       start_date: m.start_date,
       end_date: m.end_date ?? "",
       continuous_use: m.continuous_use,
+      weekly: m.weekly ?? false,
       frequency: m.frequency ?? "",
       schedules: m.schedules.map((s) => ({ scheduled_time: s })),
     }))
