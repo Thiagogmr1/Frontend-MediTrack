@@ -17,6 +17,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsToolti
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import type { Patient } from "./doctor-dashboard"
 import { MedicationAutocomplete } from "@/components/doctor/medication-autocomplete"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 // ─────────────────────────────────────────────────────────────
 // TYPES
@@ -33,6 +34,7 @@ interface PatientDashboard {
   consecutive_days: number
   daily_adherence: { date: string; total_doses: number; taken_doses: number; adherence: number }[]
   weekly_adherence: { week: string; total_doses: number; taken_doses: number; adherence: number }[]
+  medication_adherence: { medication_id: number; name: string; scheduled_time: string; total_doses: number; taken_doses: number; adherence: number }[]
 }
 
 interface DoctorPatientDetailProps {
@@ -469,6 +471,47 @@ export function DoctorPatientDetail({ patient, onBack }: DoctorPatientDetailProp
               ))}
             </CardContent>
           </Card>
+          
+          {/* Adesão por medicamento */}
+          {dashboard.medication_adherence && dashboard.medication_adherence.length > 0 && (
+            <Card className="mt-4">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  Adesão por medicamento
+                  {dashboard.medication_adherence?.some((m) => m.total_doses > 0 && m.adherence < 50) && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-destructive" />
+                  )}
+                </CardTitle>
+                <p className="text-xs text-muted-foreground mt-1">Acompanhe a adesão de cada medicamento</p>
+              </CardHeader>
+              <CardContent>
+                {dashboard.medication_adherence.length <= 3 ? (
+                  <div className="space-y-2">
+                    {dashboard.medication_adherence.map((med) => (
+                      <MedicationAdherenceRow key={`${med.medication_id}-${med.scheduled_time}`} med={med} />
+                    ))}
+                  </div>
+                ) : (
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="medications" className="border-none">
+                        <AccordionTrigger className="py-2 px-3 rounded-lg text-sm font-medium text-muted-foreground 
+                        hover:bg-accent hover:text-foreground hover:no-underline transition-all duration-200 cursor-pointer [&>svg]:size-5">
+                        Ver todos os {dashboard.medication_adherence.length} medicamentos
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-5 pt-1">
+                          {dashboard.medication_adherence.map((med) => (
+                            <MedicationAdherenceRow key={`${med.medication_id}-${med.scheduled_time}`} med={med} />
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
         </TabsContent>
       </Tabs>
     </div>
@@ -1442,6 +1485,25 @@ function PrescriptionForm({
       <Button className="w-full" onClick={handleSubmit} disabled={loading}>
         {loading ? "Salvando..." : "Salvar Prescrição"}
       </Button>
+    </div>
+  )
+}
+
+function MedicationAdherenceRow({ med }: { med: PatientDashboard["medication_adherence"][number] }) {
+  let badgeColor = "bg-muted text-muted-foreground border-border"
+  if (med.adherence === 100) badgeColor = "bg-[#1D9E75]/15 text-[#1D9E75] border-[#1D9E75]/30"
+  else if (med.adherence >= 50) badgeColor = "bg-[#EF9F27]/15 text-[#EF9F27] border-[#EF9F27]/30"
+  else if (med.total_doses > 0) badgeColor = "bg-destructive/15 text-destructive border-destructive/30"
+
+  return (
+    <div className="flex items-center justify-between gap-3 p-2.5 rounded-lg border border-border/50">
+      <div className="min-w-0">
+        <p className="text-sm font-medium text-foreground truncate">{med.name}</p>
+        <p className="text-xs text-muted-foreground">{med.scheduled_time.slice(0, 5)}</p>
+      </div>
+      <Badge className={`shrink-0 ${badgeColor}`}>
+        {med.total_doses > 0 ? `${med.adherence}%` : "Sem dados"}
+      </Badge>
     </div>
   )
 }
