@@ -369,7 +369,7 @@ export function DoctorNewPrescription({
                                     </div>
 
                                     {/* Indicação + Frequência */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label>Indicação de uso</Label>
                                             <Input
@@ -386,7 +386,7 @@ export function DoctorNewPrescription({
                                                 onChange={(e) => updateMedication(med.id, "frequency", e.target.value)}
                                             />
                                         </div>
-                                    </div>
+                                    </div> */}
 
                                     {/* Observações */}
                                     <div className="space-y-2">

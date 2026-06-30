@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { ArrowLeft, TrendingUp, Flame, AlertTriangle, Calendar, Plus, Phone, Clock, Trash2, Pill, 
-ChevronDown, ChevronUp, FileText, Eye, Pencil, PauseCircle, X, RotateCcw, Repeat, PlayCircle } from "lucide-react"
+ChevronDown, ChevronUp, FileText, Eye, Pencil, PauseCircle, X, RotateCcw, Repeat, PlayCircle, CalendarDays } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -54,6 +54,7 @@ interface MedicationForm {
   notes: string
   start_date: string
   end_date: string
+  weekly: boolean
   continuous_use: boolean
   frequency: string
   schedules: MedicationSchedule[]
@@ -109,6 +110,7 @@ function createEmptyMedication(): MedicationForm {
     start_date: "",
     end_date: "",
     continuous_use: false,
+    weekly: false,
     frequency: "",
     schedules: [{ scheduled_time: "" }],
   }
@@ -1113,6 +1115,19 @@ function PrescriptionEditForm({
                       <Repeat className="w-3.5 h-3.5" />
                       Uso contínuo
                     </button>
+
+                    <button
+                      type="button"
+                      onClick={() => updateMedication(med.id, "weekly", !med.weekly)}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${med.weekly
+                        ? "bg-primary/10 text-primary border-primary/30"
+                        : "bg-muted text-muted-foreground border-border hover:border-primary/30"
+                        }`}
+                    >
+                      <CalendarDays className="w-3.5 h-3.5" />
+                      Semanal
+                    </button>
+
                     {med.continuous_use && (
                       <span className="text-xs text-muted-foreground">Sem data de fim</span>
                     )}
@@ -1402,6 +1417,19 @@ function PrescriptionForm({
                       <Repeat className="w-3.5 h-3.5" />
                       Uso contínuo
                     </button>
+
+                    <button
+                      type="button"
+                      onClick={() => updateMedication(med.id, "weekly", !med.weekly)}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${med.weekly
+                        ? "bg-primary/10 text-primary border-primary/30"
+                        : "bg-muted text-muted-foreground border-border hover:border-primary/30"
+                        }`}
+                    >
+                      <CalendarDays className="w-3.5 h-3.5" />
+                      Semanal
+                    </button>
+
                     {med.continuous_use && (
                       <span className="text-xs text-muted-foreground">Sem data de fim</span>
                     )}
