@@ -104,21 +104,51 @@ export default function UsersSection() {
               transition={{ delay: 0.7 }}
               className="mt-8 bg-gradient-to-br from-[#F5F7FA] to-[#E0F2F1] rounded-2xl p-4"
             >
-              <div className="bg-white rounded-xl p-4 shadow-sm">
-                <div className="flex items-center gap-3 mb-3">
-                  <Bell className="w-5 h-5 text-[#00897B]" />
-                  <span className="font-medium text-[#003B46]">Lembrete</span>
-                  <span className="text-xs text-[#6B7280] ml-auto">Agora</span>
+              <div className="max-w-sm bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                {/* Mensagem */}
+                <div className="p-4">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-[17px] font-medium text-gray-900">
+                        ⏰ Está na hora do seu remédio!
+                      </p>
+
+                      <div className="mt-6 space-y-5">
+                        <p className="text-[18px] text-gray-900">
+                          Losartana 50mg
+                        </p>
+
+                        <p className="text-[18px] text-gray-900">
+                          Após tomar, clique em <span className="font-medium">"Tomei"</span>.
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="self-end text-xs text-gray-500">
+                      18:57
+                    </span>
+                  </div>
                 </div>
-                <p className="text-[#6B7280] text-sm">Hora de tomar Losartana 50mg</p>
-                <div className="flex gap-2 mt-3">
-                  <button className="flex-1 py-2 bg-[#00897B] text-white rounded-lg text-sm font-medium">
-                    Tomei
-                  </button>
-                  <button className="flex-1 py-2 bg-[#F5F7FA] text-[#6B7280] rounded-lg text-sm font-medium">
-                    Não Tomei
-                  </button>
-                </div>
+
+                {/* Botão estilo WhatsApp */}
+                <button className="w-full border-t border-gray-200 py-3 flex items-center justify-center gap-2 text-[#00A884] hover:bg-gray-50 transition-colors">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M9 14 4 9l5-5" />
+                    <path d="M20 17a8 8 0 0 0-8-8H4" />
+                  </svg>
+
+                  <span className="text-lg font-medium">Tomei</span>
+                </button>
               </div>
             </motion.div>
           </motion.div>
