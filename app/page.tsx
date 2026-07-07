@@ -3,17 +3,7 @@
 import { useAuth } from "@/lib/auth-context"
 import { PatientDashboard } from "@/components/patient/patient-dashboard"
 import { DoctorDashboard } from "@/components/doctor/doctor-dashboard"
-import Navbar from "@/components/sections/Navbar"
-import HeroSection from "@/components/sections/HeroSection"
-import ProblemSection from "@/components/sections/ProblemSection"
-import FeaturesSection from "@/components/sections/FeaturesSection"
-import DoctorsSection from "@/components/sections/DoctorsSection"
-import UsersSection from "@/components/sections/UsersSection"
-import SecuritySection from "@/components/sections/SecuritySection"
-import DifferentialsSection from "@/components/sections/DifferentialsSection"
-import TestimonialsSection from "@/components/sections/TestimonialsSection"
-import CTASection from "@/components/sections/CTASection"
-import Footer from "@/components/sections/Footer"
+import { MarketingLanding } from "@/components/marketing-landing"
 
 export default function Home() {
   const { isAuthenticated, role, loading } = useAuth()
@@ -22,21 +12,7 @@ export default function Home() {
   if (loading) return null
 
   if (!isAuthenticated) {
-    return (
-      <main className="min-h-screen bg-white">
-        <Navbar />
-        <HeroSection />
-        <ProblemSection />
-        <FeaturesSection />
-        <DoctorsSection />
-        <UsersSection />
-        <SecuritySection />
-        <DifferentialsSection />
-        <TestimonialsSection />
-        <CTASection />
-        <Footer />
-      </main>
-    )
+    return <MarketingLanding />
   }
 
   if (role === "patient") {

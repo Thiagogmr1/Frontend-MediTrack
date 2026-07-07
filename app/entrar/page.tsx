@@ -1,5 +1,5 @@
-import { LandingPage } from "@/components/landing-page";
+import { AccessPortal } from "@/components/access-portal";
 
 export default function EntrarPage() {
-    return <LandingPage />;
+    return <AccessPortal />;
 }
