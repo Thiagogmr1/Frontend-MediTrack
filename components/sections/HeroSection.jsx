@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { ArrowRight, CheckCircle2, Users, Calendar, Shield } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import Link from "next/link";
 
 const stats = [
   { icon: Users, value: '10K+', label: 'Pacientes Ativos' },
@@ -66,15 +67,15 @@ export default function HeroSection() {
               transition={{ delay: 0.5 }}
               className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-[#00897B] hover:bg-[#00796B] text-white px-8 py-6 text-lg rounded-xl"
                 asChild
               >
-                <a href="#contato">
+                <Link href="/entrar">
                   Entre na Plataforma
                   <ArrowRight className="ml-2 w-5 h-5" />
-                </a>
+                </Link>
               </Button>
             </motion.div>
 

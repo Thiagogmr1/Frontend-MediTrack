@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Activity } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import Link from "next/link";
 
 const navLinks = [
   { name: 'Início', href: '#inicio' },
@@ -71,7 +72,7 @@ export default function Navbar() {
        
     
             <Button className="bg-[#00897B] hover:bg-[#00796B] text-white" asChild>
-              <a href="#contato">Entrar</a>
+              <Link href="/entrar">Entrar</Link>
             </Button>
           </div>
 
