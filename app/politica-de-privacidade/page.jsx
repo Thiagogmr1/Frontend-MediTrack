@@ -24,9 +24,9 @@ export const metadata = {
 }
 
 // TODO: definir a data oficial de última atualização antes de publicar
-const LAST_UPDATED = '[DATA A SER DEFINIDA]'
+const LAST_UPDATED = '7 de julho de 2026'
 // TODO: definir o canal oficial de contato/encarregado (e-mail ou formulário) — obrigatório pelo art. 41 da LGPD
-const CONTACT_CHANNEL = '[A SER DEFINIDO PELA EMPRESA — e-mail ou formulário na plataforma]'
+const CONTACT_CHANNEL = 'meditrack087@gmail.com'
 
 const sections = [
     { id: 'quem-somos', number: '01', title: 'Quem somos', icon: Building2 },
@@ -184,7 +184,6 @@ export default function PoliticaDePrivacidadePage() {
                                 <li>Permitir que seu médico acompanhe sua adesão ao tratamento</li>
                                 <li>Guardar suas prescrições e documentos médicos de forma segura</li>
                                 <li>Viabilizar teleconsultas e comunicação com sua equipe de saúde</li>
-                                <li>Disponibilizar seu calendário de adesão ao cuidador que você autorizar</li>
                             </ul>
                             <div className="mt-4 p-4 rounded-xl bg-[#F0F7F6] border border-[#4DB6AC]/20 text-sm text-[#003B46] font-medium">
                                 Não usamos seus dados para publicidade. Não vendemos suas informações. Não
@@ -227,17 +226,17 @@ export default function PoliticaDePrivacidadePage() {
                             icon={MessageSquare}
                         >
                             <p>
-                                Antes do primeiro alerta de medicação, você recebe uma mensagem no WhatsApp com um
-                                resumo desta Política e o link para este documento completo. Nessa mensagem, você
-                                é convidado(a) a responder <strong>ACEITO</strong> ou{' '}
-                                <strong>NÃO ACEITO</strong>.
+                                Antes do primeiro alerta de medicação, você recebe uma mensagem no WhatsApp com um resumo 
+                                desta Política e o link para este documento completo. Nessa mensagem, você poderá tocar em 
+                                um dos botões apresentados: <strong>Aceito</strong> ou{' '}
+                                <strong>Não Aceito</strong>.
                             </p>
 
                             <div className="grid sm:grid-cols-2 gap-4 mt-6">
                                 <div className="p-5 rounded-xl bg-[#F0F7F6] border border-[#4DB6AC]/30">
                                     <div className="flex items-center gap-2 mb-2">
                                         <CheckCircle2 className="w-5 h-5 text-[#00695C]" />
-                                        <h3 className="font-semibold text-[#003B46]">Responder ACEITO</h3>
+                                        <h3 className="font-semibold text-[#003B46]">Tocar em <strong>Aceito</strong></h3>
                                     </div>
                                     <p className="text-sm text-slate-600">
                                         Você autoriza a MediTrack a tratar seus dados pessoais e seus dados de saúde
@@ -248,7 +247,7 @@ export default function PoliticaDePrivacidadePage() {
                                 <div className="p-5 rounded-xl bg-slate-50 border border-slate-200">
                                     <div className="flex items-center gap-2 mb-2">
                                         <XCircle className="w-5 h-5 text-slate-500" />
-                                        <h3 className="font-semibold text-slate-700">Responder NÃO ACEITO</h3>
+                                        <h3 className="font-semibold text-slate-700">Tocar em <strong>Não Aceito</strong></h3>
                                     </div>
                                     <p className="text-sm text-slate-600">
                                         Você não autoriza o tratamento dos seus dados. Nesse caso, não será possível
@@ -260,8 +259,9 @@ export default function PoliticaDePrivacidadePage() {
 
                             <p className="mt-6">
                                 Sua resposta fica registrada como evidência do seu consentimento, conforme exigido
-                                pelo art. 8º da LGPD. Você pode revogar esse consentimento a qualquer momento,
-                                conforme explicado na Seção 8.
+                                pelo art. 8º da LGPD. Caso você toque em 'Não aceito' por engano, o sistema pedirá 
+                                uma confirmação antes de tornar essa escolha definitiva. Você pode revogar esse 
+                                consentimento a qualquer momento, conforme explicado na Seção 8.
                             </p>
                         </Section>
 
@@ -271,7 +271,7 @@ export default function PoliticaDePrivacidadePage() {
                             <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
                                 <li>Você mesmo — pelo aplicativo e pela plataforma web</li>
                                 <li>Seu médico responsável — para acompanhar seu tratamento</li>
-                                <li>Cuidador autorizado por você — com acesso restrito ao seu calendário de adesão</li>
+                                {/* <li>Cuidador autorizado por você — com acesso restrito ao seu calendário de adesão</li> */}
                                 <li>
                                     Equipe técnica da MediTrack — somente quando necessário para o funcionamento e a
                                     segurança da plataforma, com sigilo garantido
@@ -311,6 +311,13 @@ export default function PoliticaDePrivacidadePage() {
                                 <li>Revogar seu consentimento a qualquer momento</li>
                                 <li>Ser informado sobre com quem seus dados foram compartilhados</li>
                             </ul>
+                            <p>
+                                Para revogar seu consentimento, basta enviar a palavra PARAR ou REVOGAR pelo WhatsApp, a 
+                                qualquer momento. O sistema confirmará sua solicitação antes de efetivá-la. Importante: 
+                                revogar o consentimento interrompe o envio de novos lembretes de medicação, mas não exclui 
+                                automaticamente os dados já registrados no seu histórico — a exclusão de dados pode ser solicitada 
+                                separadamente, conforme abaixo.
+                            </p>
                             <div className="mt-5 p-5 rounded-xl bg-[#003B46] text-white">
                                 <p className="text-sm text-white/80 mb-1">
                                     Para exercer qualquer um desses direitos, entre em contato conosco pelo canal
