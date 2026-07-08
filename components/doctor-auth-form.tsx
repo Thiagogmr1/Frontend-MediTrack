@@ -1,12 +1,13 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { ArrowLeft, Eye, EyeOff, Stethoscope } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useAuth } from "@/lib/auth-context" 
+import { useAuth } from "@/lib/auth-context"
 
 export function DoctorAuthForm({ onBack }: { onBack: () => void }) {
   const [mode, setMode] = useState<"login" | "register">("login")
@@ -14,21 +15,28 @@ export function DoctorAuthForm({ onBack }: { onBack: () => void }) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const { loginAsDoctor } = useAuth()
+  const router = useRouter()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    setLoading(true)
 
     try {
       const success = await loginAsDoctor(email, password)
-      if (!success) {
+      if (success) {
+        router.push("/")
+      } else {
         setError("Email ou senha incorretos")
       }
     } catch (err) {
       console.error(err)
       setError("Ocorreu um erro ao tentar fazer login")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -107,8 +115,12 @@ export function DoctorAuthForm({ onBack }: { onBack: () => void }) {
                 <p className="text-red-500 text-sm text-center">{error}</p>
               )}
 
-              <Button type="submit" className="w-full mt-2 bg-primary text-primary-foreground hover:bg-primary/90">
-                Entrar
+              <Button
+                type="submit"
+                className="w-full mt-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                disabled={loading}
+              >
+                {loading ? "Entrando..." : "Entrar"}
               </Button>
 
               <p className="text-sm text-center text-muted-foreground mt-2">
