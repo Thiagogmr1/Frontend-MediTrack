@@ -312,11 +312,12 @@ export default function PoliticaDePrivacidadePage() {
                                 <li>Ser informado sobre com quem seus dados foram compartilhados</li>
                             </ul>
                             <p>
-                                Para revogar seu consentimento, basta enviar a palavra PARAR ou REVOGAR pelo WhatsApp, a 
-                                qualquer momento. O sistema confirmará sua solicitação antes de efetivá-la. Importante: 
-                                revogar o consentimento interrompe o envio de novos lembretes de medicação, mas não exclui 
-                                automaticamente os dados já registrados no seu histórico — a exclusão de dados pode ser solicitada 
-                                separadamente, conforme abaixo.
+                                Para interromper o recebimento de lembretes de medicação, entre em contato com o médico responsável 
+                                pelo seu cadastro e solicite a suspensão ou o encerramento da sua prescrição — essa é a forma pela 
+                                qual a interrupção é registrada no sistema. Você também pode enviar a palavra Pare ou Parar pelo 
+                                WhatsApp a qualquer momento para receber essa orientação novamente. Importante: interromper os lembretes 
+                                não exclui automaticamente os dados já registrados no seu histórico — a exclusão de dados pode ser 
+                                solicitada separadamente, conforme abaixo.
                             </p>
                             <div className="mt-5 p-5 rounded-xl bg-[#003B46] text-white">
                                 <p className="text-sm text-white/80 mb-1">
