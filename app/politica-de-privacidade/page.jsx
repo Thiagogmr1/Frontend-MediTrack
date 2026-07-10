@@ -229,7 +229,7 @@ export default function PoliticaDePrivacidadePage() {
                                 Antes do primeiro alerta de medicação, você recebe uma mensagem no WhatsApp com um resumo 
                                 desta Política e o link para este documento completo. Nessa mensagem, você poderá tocar em 
                                 um dos botões apresentados: <strong>Aceito</strong> ou{' '}
-                                <strong>Não Aceito</strong>.
+                                <strong>Não aceito</strong>.
                             </p>
 
                             <div className="grid sm:grid-cols-2 gap-4 mt-6">
@@ -247,7 +247,7 @@ export default function PoliticaDePrivacidadePage() {
                                 <div className="p-5 rounded-xl bg-slate-50 border border-slate-200">
                                     <div className="flex items-center gap-2 mb-2">
                                         <XCircle className="w-5 h-5 text-slate-500" />
-                                        <h3 className="font-semibold text-slate-700">Tocar em <strong>Não Aceito</strong></h3>
+                                        <h3 className="font-semibold text-slate-700">Tocar em <strong>Não aceito</strong></h3>
                                     </div>
                                     <p className="text-sm text-slate-600">
                                         Você não autoriza o tratamento dos seus dados. Nesse caso, não será possível
@@ -259,9 +259,10 @@ export default function PoliticaDePrivacidadePage() {
 
                             <p className="mt-6">
                                 Sua resposta fica registrada como evidência do seu consentimento, conforme exigido
-                                pelo art. 8º da LGPD. Caso você toque em 'Não aceito' por engano, o sistema pedirá 
-                                uma confirmação antes de tornar essa escolha definitiva. Você pode revogar esse 
-                                consentimento a qualquer momento, conforme explicado na Seção 8.
+                                pelo art. 8º da LGPD. Caso você toque em 'Não aceito' por engano, ou queira mudar de
+                                ideia depois, basta enviar a palavra ACEITAR pelo WhatsApp a qualquer momento — você
+                                receberá novamente a pergunta original. Você pode revogar esse consentimento a
+                                qualquer momento, conforme explicado na Seção 8.
                             </p>
                         </Section>
 
