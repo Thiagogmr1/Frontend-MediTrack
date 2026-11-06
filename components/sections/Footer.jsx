@@ -51,9 +51,9 @@ export default function Footer() {
               Transformando a adesão medicamentosa com tecnologia inteligente.
             </p>
             <div className="space-y-3">
-              <a href="mailto:meditrack087@gmail.com" className="flex items-center gap-3 text-white/60 hover:text-[#4DB6AC] transition-colors">
+              <a href="mailto:meditracksaudedigital@gmail.com" className="flex items-center gap-3 text-white/60 hover:text-[#4DB6AC] transition-colors">
                 <Mail className="w-5 h-5" />
-                meditrack087@gmail.com
+                meditracksaudedigital@gmail.com
               </a>
               <a href="tel:+5562999356087" className="flex items-center gap-3 text-white/60 hover:text-[#4DB6AC] transition-colors">
                 <Phone className="w-5 h-5" />

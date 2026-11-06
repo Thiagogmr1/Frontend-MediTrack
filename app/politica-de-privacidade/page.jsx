@@ -26,7 +26,7 @@ export const metadata = {
 // TODO: definir a data oficial de última atualização antes de publicar
 const LAST_UPDATED = '7 de julho de 2026'
 // TODO: definir o canal oficial de contato/encarregado (e-mail ou formulário) — obrigatório pelo art. 41 da LGPD
-const CONTACT_CHANNEL = 'meditrack087@gmail.com'
+const CONTACT_CHANNEL = 'meditracksaudedigital@gmail.com'
 
 const sections = [
     { id: 'quem-somos', number: '01', title: 'Quem somos', icon: Building2 },
@@ -121,7 +121,7 @@ export default function PoliticaDePrivacidadePage() {
                         <p className="text-slate-700 leading-relaxed mt-3">
                             A MediTrack foi desenvolvida para ajudar pacientes a seguirem seus tratamentos com
                             mais facilidade e segurança. Por isso, levamos a proteção das suas informações muito
-                            a sério — especialmente porque lidamos com dados de saúde, que a lei considera{' '}
+                            a sério, especialmente porque lidamos com dados de saúde, que a lei considera{' '}
                             <strong className="text-[#003B46]">dados sensíveis</strong>.
                         </p>
                     </div>
