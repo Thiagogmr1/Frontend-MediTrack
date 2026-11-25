@@ -1,9 +1,9 @@
 "use client"
 
 import { useAuth } from "@/lib/auth-context"
-import { LandingPage } from "@/components/landing-page"
 import { PatientDashboard } from "@/components/patient/patient-dashboard"
 import { DoctorDashboard } from "@/components/doctor/doctor-dashboard"
+import { MarketingLanding } from "@/components/marketing-landing"
 
 export default function Home() {
   const { isAuthenticated, role, loading } = useAuth()
@@ -12,7 +12,7 @@ export default function Home() {
   if (loading) return null
 
   if (!isAuthenticated) {
-    return <LandingPage />
+    return <MarketingLanding />
   }
 
   if (role === "patient") {
@@ -23,5 +23,5 @@ export default function Home() {
     return <DoctorDashboard />
   }
 
-  return <LandingPage />
+  return null
 }

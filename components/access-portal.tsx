@@ -10,7 +10,7 @@ import { DoctorAuthForm } from "@/components/doctor-auth-form"
 
 type View = "home" | "patient-login" | "doctor-login"
 
-export function LandingPage() {
+export function AccessPortal() {
   const [view, setView] = useState<View>("home")
 
   if (view === "patient-login") {
